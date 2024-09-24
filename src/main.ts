@@ -10,6 +10,6 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document, customOptions);
 
   await app.listen(process.env.APP_PORT || 3000);
-  console.log(`Run: PORT: ${process.env.APP_PORT || 3000}`);
+  console.log(`Run: PORT  : ${process.env.APP_PORT || 3000}`);
 }
 bootstrap();
