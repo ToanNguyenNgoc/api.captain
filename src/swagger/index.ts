@@ -4,6 +4,8 @@ import { name } from 'src/constants';
 export const API_TAG = {
   Auth: 'Auth',
   User: 'User',
+  Ticket: 'Ticket',
+  Order: 'Order',
   Init: 'Init',
 };
 
@@ -13,6 +15,9 @@ export const options = new DocumentBuilder()
   .setVersion('1.0')
   .addTag(API_TAG.Auth)
   .addTag(API_TAG.User)
+  .addTag(API_TAG.Ticket)
+  .addTag(API_TAG.Order)
+
   .addTag(API_TAG.Init)
   // .addApiKey(
   //   {

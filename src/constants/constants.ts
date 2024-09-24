@@ -14,3 +14,9 @@ export const ROLE = {
   SPA: process.env.INIT_ROLE || 'SUPER_ADMIN',
   EMPLOYEE: 'EMPLOYEE',
 };
+
+export const ORDER_STATUS = {
+  PENDING: 'PENDING',
+  PAID: 'PAID',
+  CANCELLED: 'CANCELLED',
+};
