@@ -6,12 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { API_TAG } from 'src/swagger';
+import { name, ROLE } from 'src/constants';
+import { JwtSystemGuard, RoleGuardFactory } from 'src/middlewares/guards';
 
 @ApiTags(API_TAG.User)
 @Controller('api/users')
@@ -19,11 +22,15 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
+  @ApiBearerAuth(name.JWT)
+  @UseGuards(JwtSystemGuard, RoleGuardFactory([ROLE.SPA]))
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
   @Get()
+  @ApiBearerAuth(name.JWT)
+  @UseGuards(JwtSystemGuard, RoleGuardFactory([ROLE.SPA]))
   findAll() {
     return this.usersService.findAll();
   }

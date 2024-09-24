@@ -7,4 +7,10 @@ export const name = {
   AGE_TOKEN: 60 * 1000 * 2,
   GOOGLE_OAUTH_2: 'google_oauth_2',
   FACEBOOK_AUTH: 'facebook_auth',
+  MIDDLEWARE_NAME_JWT: 'MIDDLEWARE_NAME_JWT',
+};
+
+export const ROLE = {
+  SPA: process.env.INIT_ROLE || 'SUPER_ADMIN',
+  EMPLOYEE: 'EMPLOYEE',
 };

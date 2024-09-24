@@ -4,6 +4,7 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 
 @Entity({ name: 'tb_user' })
@@ -26,8 +27,8 @@ export class User {
   @Column({ nullable: false })
   role: string;
 
-  @Column({ default: false })
-  deleted: boolean;
+  @DeleteDateColumn()
+  deleted_at: Date;
 
   @CreateDateColumn()
   created_at: Date;

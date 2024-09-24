@@ -4,6 +4,7 @@ import { name } from 'src/constants';
 export const API_TAG = {
   Auth: 'Auth',
   User: 'User',
+  Init: 'Init',
 };
 
 export const options = new DocumentBuilder()
@@ -12,6 +13,7 @@ export const options = new DocumentBuilder()
   .setVersion('1.0')
   .addTag(API_TAG.Auth)
   .addTag(API_TAG.User)
+  .addTag(API_TAG.Init)
   // .addApiKey(
   //   {
   //     type: 'apiKey',
@@ -25,7 +27,7 @@ export const options = new DocumentBuilder()
       type: 'http',
       scheme: 'bearer',
       bearerFormat: 'JWT',
-      name: 'JWT',
+      name: name.JWT,
       description: 'Enter JWT token',
       in: 'header',
     },
