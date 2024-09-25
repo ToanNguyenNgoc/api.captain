@@ -17,7 +17,7 @@ export class HttpResponse {
           : page + 1,
     };
     return {
-      response,
+      context: response,
       status: 200,
       message: null,
       name: null,
@@ -26,7 +26,7 @@ export class HttpResponse {
 
   static detail<Data>(data: Data) {
     return {
-      response: data,
+      context: data,
       status: 200,
       message: null,
       name: null,

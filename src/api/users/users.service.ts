@@ -82,7 +82,7 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = await (await this.findOne(id)).response;
+    const user = await (await this.findOne(id)).context;
     await this.userRepo
       .createQueryBuilder('tb_user')
       .where({ id })

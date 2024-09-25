@@ -123,7 +123,7 @@ export class OrdersService {
   }
 
   async update(id: number, updateOrderDto: UpdateOrderDto) {
-    const order = (await this.findOne(id)).response;
+    const order = (await this.findOne(id)).context;
     const newOrder = Object.assign(order, updateOrderDto);
     await this.orderRepo
       .createQueryBuilder('tb_order')
@@ -144,7 +144,7 @@ export class OrdersService {
   }
 
   async checking(id: number, checkinOrderDto: CheckInOrderDto) {
-    const order = (await this.findOne(id)).response;
+    const order = (await this.findOne(id)).context;
     if (order.check_in) {
       throw new HttpException('Order is checked', HttpStatus.FORBIDDEN);
     }
