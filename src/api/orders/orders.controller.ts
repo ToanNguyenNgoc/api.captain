@@ -28,6 +28,7 @@ export class OrdersController {
     return this.ordersService.create(createOrderDto);
   }
 
+  @Get()
   @ApiBearerAuth(name.JWT)
   @UseGuards(JwtSystemGuard, RoleGuardFactory([ROLE.SPA]))
   findAll(@Query() qr: QrOrderDto) {

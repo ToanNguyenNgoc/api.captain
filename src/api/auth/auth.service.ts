@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { HttpResponse, PasswordHelper } from 'src/helpers';
 import { JwtService } from '@nestjs/jwt';
 import { aesEncode } from 'src/utils';
+import { RequestHeader } from 'src/interfaces';
 
 @Injectable()
 export class AuthService {
@@ -44,5 +45,13 @@ export class AuthService {
         secret: process.env.JWT_SECRET,
       },
     );
+  }
+  async profile(request: RequestHeader<User>) {
+    console.log(request.user);
+    const user = await this.userRepo
+      .createQueryBuilder('tb_user')
+      .where({ id: request.user.id })
+      .getOne();
+    return HttpResponse.detail(user);
   }
 }

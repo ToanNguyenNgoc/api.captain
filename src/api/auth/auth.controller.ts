@@ -6,11 +6,17 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { API_TAG } from 'src/swagger';
 import { LoginAuthDto } from './dto';
+import { RequestHeader } from 'src/interfaces';
+import { User } from '../users/entities/user.entity';
+import { name } from 'src/constants';
+import { JwtSystemGuard } from 'src/middlewares/guards';
 
 @ApiTags(API_TAG.Auth)
 @Controller('api/auth')
@@ -20,6 +26,12 @@ export class AuthController {
   @Post('/login')
   login(@Body() body: LoginAuthDto) {
     return this.authService.login(body);
+  }
+  @Get('/profile')
+  @ApiBearerAuth(name.JWT)
+  @UseGuards(JwtSystemGuard)
+  profile(@Req() req: RequestHeader<User>) {
+    return this.authService.profile(req);
   }
   // @Post()
   // create(@Body() createAuthDto: CreateAuthDto) {
