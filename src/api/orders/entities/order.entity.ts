@@ -42,6 +42,9 @@ export class Order {
   @Column()
   amount: number;
 
+  @Column({ default: false })
+  check_in: boolean;
+
   @DeleteDateColumn()
   deleted_at: Date;
 

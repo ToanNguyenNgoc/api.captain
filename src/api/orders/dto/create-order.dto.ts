@@ -39,11 +39,11 @@ export class CreateOrderDto {
 
   @ApiProperty()
   @IsOptional()
-  // @IsUrl()
+  @IsUrl()
   facebook: string;
 
   @ApiProperty()
-  // @Matches(/^[0-9\s\-()+]+$/, { message: 'Telephone number is invalid' })
+  @Matches(/^[0-9\s\-()+]+$/, { message: 'Telephone number is invalid' })
   telephone: string;
 
   @ApiProperty()

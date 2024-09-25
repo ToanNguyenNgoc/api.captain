@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,6 +11,8 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { HttpResponse, PasswordHelper } from 'src/helpers';
 import { ROLE } from 'src/constants';
+import { QrUserDto } from './dto';
+import { getQrPageLimit } from 'src/utils';
 
 @Injectable()
 export class UsersService {
@@ -41,9 +48,8 @@ export class UsersService {
     return HttpResponse.detail<User>(response);
   }
 
-  async findAll() {
-    const page = 1;
-    const limit = 15;
+  async findAll(qr: QrUserDto) {
+    const { page, limit, offset } = getQrPageLimit(qr);
     const queryBuilder = this.userRepo
       .createQueryBuilder('tb_user')
       .select([
@@ -57,18 +63,41 @@ export class UsersService {
         'tb_user.updated_at',
       ]);
     const [data, total] = await queryBuilder
-      .offset(page * limit - limit)
+      .offset(offset)
       .limit(limit)
+      .orderBy('tb_user.created_at', 'DESC')
       .getManyAndCount();
     return HttpResponse.paginate<User[]>(data, total, page, limit);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    const user = await this.userRepo
+      .createQueryBuilder('tb_user')
+      .where({ id })
+      .getOne();
+    if (!user) {
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+    }
+    return HttpResponse.detail(user);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const user = await (await this.findOne(id)).response;
+    await this.userRepo
+      .createQueryBuilder('tb_user')
+      .where({ id })
+      .update({
+        fullname: updateUserDto.fullname,
+        email: updateUserDto.email,
+        role: updateUserDto.role,
+        password: updateUserDto.password
+          ? await PasswordHelper.generatePassword(updateUserDto.password)
+          : undefined,
+      })
+      .execute();
+    const newUser = Object.assign(user, updateUserDto);
+    delete newUser.password;
+    return HttpResponse.detail(newUser);
   }
 
   remove(id: number) {

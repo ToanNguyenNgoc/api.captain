@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { CheckInOrderDto, UpdateOrderDto } from './dto/update-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Ticket } from '../tickets/entities';
 import { Like, Repository } from 'typeorm';
@@ -112,6 +112,7 @@ export class OrdersService {
     const response = await this.orderRepo
       .createQueryBuilder('tb_order')
       .where({ id })
+      .orWhere({ tran_uid: id })
       .leftJoinAndSelect('tb_order.productable', 'tb_productable')
       .leftJoinAndSelect('tb_productable.ticket', 'tb_ticket')
       .getOne();
@@ -121,11 +122,43 @@ export class OrdersService {
     return HttpResponse.detail(response);
   }
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
+  async update(id: number, updateOrderDto: UpdateOrderDto) {
+    const order = (await this.findOne(id)).response;
+    const newOrder = Object.assign(order, updateOrderDto);
+    await this.orderRepo
+      .createQueryBuilder('tb_order')
+      .where({ id })
+      .orWhere({ tran_uid: id })
+      .update({
+        fullname: newOrder.fullname,
+        date_of_birth: newOrder.date_of_birth,
+        email: newOrder.email,
+        facebook: newOrder.facebook,
+        telephone: newOrder.telephone,
+        note: newOrder.note,
+        status: newOrder.status,
+        check_in: newOrder.check_in,
+      })
+      .execute();
+    return HttpResponse.detail(newOrder);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+  async checking(id: number, checkinOrderDto: CheckInOrderDto) {
+    const order = (await this.findOne(id)).response;
+    if (order.check_in) {
+      throw new HttpException('Order is checked', HttpStatus.FORBIDDEN);
+    }
+    await this.orderRepo
+      .createQueryBuilder('tb_order')
+      .where({ id })
+      .orWhere({ tran_uid: id })
+      .update({ check_in: checkinOrderDto.check_in })
+      .execute();
+    return HttpResponse.detail({ message: 'Check in success' });
+  }
+
+  async remove(id: number) {
+    await this.orderRepo.softDelete({ id });
+    return HttpResponse.detail({ message: 'Delete success' });
   }
 }
