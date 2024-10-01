@@ -134,7 +134,7 @@ export class OrdersService {
 
   async generateQRCode(uuid: string) {
     // Lưu trong thư mục 'src/uploads' hoặc nơi nào khác trong thư mục root
-    const qrCodePath = path.join(process.cwd(), 'src/uploads', `${uuid}.png`);
+    const qrCodePath = path.join(process.cwd(), 'uploads', `${uuid}.png`);
     // Tạo mã QR và lưu vào file
     await QRCode.toFile(qrCodePath, uuid);
 

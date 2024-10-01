@@ -23,7 +23,7 @@ export class MediaController {
   constructor(private readonly mediaService: MediaService) {}
   @Get(':imagename')
   getImageByName(@Param('imagename') imagename: string, @Res() res: Response) {
-    return of(res.sendFile(join(process.cwd(), '/src/uploads/' + imagename)));
+    return of(res.sendFile(join(process.cwd(), '/uploads/' + imagename)));
   }
 
   // @Post()
