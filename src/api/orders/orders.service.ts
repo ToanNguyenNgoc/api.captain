@@ -3,7 +3,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { CheckInOrderDto, UpdateOrderDto } from './dto/update-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Ticket } from '../tickets/entities';
-import { Like, Repository } from 'typeorm';
+import { Brackets, Like, Repository } from 'typeorm';
 import { Order, Productable } from './entities';
 import { HttpResponse } from 'src/helpers';
 import { TicketsService } from '../tickets/tickets.service';
@@ -81,39 +81,63 @@ export class OrdersService {
 
   async findAll(qr: QrOrderDto) {
     const { page, limit, offset } = getQrPageLimit(qr);
-    // const response = await this.productableRepo
-    //   .createQueryBuilder('tb_productable')
-    //   .where('tb_productable.order = :order_id', { order_id: 1 })
-    //   .getMany();
     const queryBuilder = this.orderRepo
       .createQueryBuilder('tb_order')
       .leftJoinAndSelect('tb_order.productable', 'tb_productable')
       .leftJoinAndSelect('tb_productable.ticket', 'tb_ticket');
+
+    // Điều kiện tìm kiếm
     if (qr.search) {
-      queryBuilder
-        .where({ fullname: Like(`%${qr.search}%`) })
-        .orWhere({ telephone: Like(`%${qr.search}%`) })
-        .orWhere({ email: Like(`%${qr.search}%`) })
-        .orWhere({ tran_uid: Like(`%${qr.search}%`) });
+      queryBuilder.where(
+        new Brackets((qb) => {
+          qb.where('tb_order.fullname LIKE :search', {
+            search: `%${qr.search}%`,
+          })
+            .orWhere('tb_order.telephone LIKE :search', {
+              search: `%${qr.search}%`,
+            })
+            .orWhere('tb_order.email LIKE :search', {
+              search: `%${qr.search}%`,
+            })
+            .orWhere('tb_order.tran_uid LIKE :search', {
+              search: `%${qr.search}%`,
+            });
+        }),
+      );
     }
+
+    // Điều kiện trạng thái
     if (qr.status) {
-      queryBuilder.where({ status: qr.status });
+      queryBuilder.andWhere('tb_order.status = :status', { status: qr.status });
     }
+
+    // Sắp xếp
     if (qr.sort) {
-      if (qr.sort === sortOrder._amount) {
-        queryBuilder.orderBy('tb_order.amount', 'DESC');
-      } else if (qr.sort === sortOrder.amount) {
-        queryBuilder.orderBy('tb_order.amount', 'ASC');
-      } else if (qr.sort === sortOrder._created_at) {
-        queryBuilder.orderBy('tb_order.created_at', 'DESC');
-      } else if (qr.sort === sortOrder.created_at) {
-        queryBuilder.orderBy('tb_order.created_at', 'ASC');
+      switch (qr.sort) {
+        case sortOrder._amount:
+          queryBuilder.orderBy('tb_order.amount', 'DESC');
+          break;
+        case sortOrder.amount:
+          queryBuilder.orderBy('tb_order.amount', 'ASC');
+          break;
+        case sortOrder._created_at:
+          queryBuilder.orderBy('tb_order.created_at', 'DESC');
+          break;
+        case sortOrder.created_at:
+          queryBuilder.orderBy('tb_order.created_at', 'ASC');
+          break;
+        default:
+          // Thêm một điều kiện sắp xếp mặc định nếu cần
+          break;
       }
     }
+
+    // Phân trang
     const [data, total] = await queryBuilder
-      .offset(offset)
-      .limit(limit)
+      .skip(offset)
+      .take(limit)
       .getManyAndCount();
+
     return HttpResponse.paginate(data, total, page, limit);
   }
 
