@@ -14,6 +14,12 @@ export class Productable {
   id: number;
 
   @Column()
+  uuid: string;
+
+  @Column({ default: false })
+  is_check_in: boolean;
+
+  @Column()
   quantity: number;
 
   @Column()

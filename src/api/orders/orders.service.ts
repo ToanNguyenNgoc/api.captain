@@ -9,6 +9,7 @@ import { HttpResponse } from 'src/helpers';
 import { TicketsService } from '../tickets/tickets.service';
 import { QrOrderDto, sortOrder } from './dto';
 import { getQrPageLimit } from 'src/utils';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class OrdersService {
@@ -52,12 +53,15 @@ export class OrdersService {
       if (ticket) {
         const amount_price = ticket.price_sale || ticket.price;
         amount += amount_price * productable[i].quantity;
-        const newProductable = new Productable();
-        newProductable.order = newOrder;
-        newProductable.base_price = amount_price;
-        newProductable.quantity = productable[i].quantity;
-        newProductable.ticket = ticket;
-        await this.productableRepo.save(newProductable);
+        for (let j = 0; j < productable[i].quantity; j++) {
+          const newProductable = new Productable();
+          newProductable.order = newOrder;
+          newProductable.base_price = amount_price;
+          newProductable.quantity = 1;
+          newProductable.ticket = ticket;
+          newProductable.uuid = uuidv4();
+          await this.productableRepo.save(newProductable);
+        }
       }
     }
     await this.orderRepo
