@@ -23,9 +23,9 @@ export class ProductablesService {
   async findOne(id: string) {
     const productable = await this.productableRepo
       .createQueryBuilder('tb_productable')
+      .where({ uuid: id })
       .leftJoinAndSelect('tb_productable.order', 'tb_order')
       .leftJoinAndSelect('tb_productable.ticket', 'tb_ticket')
-      .where({ uuid: id })
       .getOne();
     if (!productable) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
