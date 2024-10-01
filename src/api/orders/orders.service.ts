@@ -12,7 +12,6 @@ import { getQrPageLimit } from 'src/utils';
 import { v4 as uuidv4 } from 'uuid';
 import { MailerService } from '@nestjs-modules/mailer';
 import * as QRCode from 'qrcode';
-import * as fs from 'fs';
 import * as path from 'path';
 
 @Injectable()
@@ -176,12 +175,13 @@ export class OrdersService {
         }),
       );
       await this.mailerService.sendMail({
-        to: 'bmt.long.faker@gmail.com',
+        to: order.email,
         from: String(process.env.MAIL_FROM),
-        subject: 'TICKET CODE',
-        template: 'welcome',
+        subject: 'TICKET QR CODE',
+        template: 'mail_ticker',
         context: {
-          name: 'LONG CHIM',
+          order,
+          count_ticket: order.productable.length,
           items: itemsWithQRCode,
         },
       });
