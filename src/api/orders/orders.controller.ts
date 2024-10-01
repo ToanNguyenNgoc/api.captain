@@ -44,8 +44,8 @@ export class OrdersController {
   }
 
   @Put(':id')
-  @ApiBearerAuth(name.JWT)
-  @UseGuards(JwtSystemGuard, RoleGuardFactory([]))
+  // @ApiBearerAuth(name.JWT)
+  // @UseGuards(JwtSystemGuard, RoleGuardFactory([]))
   update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
     return this.ordersService.update(+id, updateOrderDto);
   }

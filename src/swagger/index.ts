@@ -7,6 +7,7 @@ export const API_TAG = {
   Ticket: 'Ticket',
   Order: 'Order',
   Init: 'Init',
+  Media: 'Media',
 };
 
 export const options = new DocumentBuilder()
@@ -17,6 +18,7 @@ export const options = new DocumentBuilder()
   .addTag(API_TAG.User)
   .addTag(API_TAG.Ticket)
   .addTag(API_TAG.Order)
+  .addTag(API_TAG.Media)
 
   .addTag(API_TAG.Init)
   // .addApiKey(

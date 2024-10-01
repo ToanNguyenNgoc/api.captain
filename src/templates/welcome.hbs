@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      font-size: 100%;
+    }
+    .qr-code{
+      width: 150px;
+      height: 150px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Welcome {{name}}!</h1>
+  <p>Thank you for joining us. Please confirm your email by clicking the link below:</p>
+  <ul>
+    {{#each items}}
+    <li>
+      uuid: {{this.uuid}}<br />
+      {{this.qrCodePath}}
+      <img src="{{this.qrCodePath}}" alt="QR Code for" class="qr-code" />
+    </li>
+    {{/each}}
+  </ul>
+</body>
+
+</html>

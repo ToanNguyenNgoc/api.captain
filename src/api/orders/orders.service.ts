@@ -10,6 +10,10 @@ import { TicketsService } from '../tickets/tickets.service';
 import { QrOrderDto, sortOrder } from './dto';
 import { getQrPageLimit } from 'src/utils';
 import { v4 as uuidv4 } from 'uuid';
+import { MailerService } from '@nestjs-modules/mailer';
+import * as QRCode from 'qrcode';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class OrdersService {
@@ -24,6 +28,8 @@ export class OrdersService {
 
     @InjectRepository(Productable)
     private readonly productableRepo: Repository<Productable>,
+
+    private readonly mailerService: MailerService,
   ) {}
   async create(createOrderDto: CreateOrderDto) {
     const {
@@ -126,6 +132,15 @@ export class OrdersService {
     return HttpResponse.detail(response);
   }
 
+  async generateQRCode(uuid: string) {
+    // Lưu trong thư mục 'src/uploads' hoặc nơi nào khác trong thư mục root
+    const qrCodePath = path.join(process.cwd(), 'src/uploads', `${uuid}.png`);
+    // Tạo mã QR và lưu vào file
+    await QRCode.toFile(qrCodePath, uuid);
+
+    return qrCodePath; // Trả về đường dẫn của file mã QR
+  }
+
   async update(id: number, updateOrderDto: UpdateOrderDto) {
     const order = (await this.findOne(id)).context;
     const newOrder = Object.assign(order, updateOrderDto);
@@ -144,6 +159,33 @@ export class OrdersService {
         check_in: newOrder.check_in,
       })
       .execute();
+    if (updateOrderDto.status === 'PAID') {
+      const items = await Promise.all(
+        order.productable.map(async (i) => ({
+          ...i,
+          qr_code: await QRCode.toDataURL(i.uuid), // Sử dụng await cho QR code
+        })),
+      );
+      const itemsWithQRCode = await Promise.all(
+        items.map(async (item) => {
+          const qrCodePath = await this.generateQRCode(item.uuid); // Tạo mã QR và lấy đường dẫn
+          return {
+            ...item,
+            qrCodePath: `${process.env.APP_DOMAIN}/media/${item.uuid}.png`,
+          };
+        }),
+      );
+      await this.mailerService.sendMail({
+        to: 'bmt.long.faker@gmail.com',
+        from: String(process.env.MAIL_FROM),
+        subject: 'TICKET CODE',
+        template: 'welcome',
+        context: {
+          name: 'LONG CHIM',
+          items: itemsWithQRCode,
+        },
+      });
+    }
     return HttpResponse.detail(newOrder);
   }
 

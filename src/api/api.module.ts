@@ -7,6 +7,7 @@ import { JwtSystemStrategy } from 'src/middlewares';
 import { TicketsModule } from './tickets/tickets.module';
 import { OrdersModule } from './orders/orders.module';
 import { ProductablesModule } from './productables/productables.module';
+import { MediaModule } from './media/media.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ProductablesModule } from './productables/productables.module';
     TicketsModule,
     OrdersModule,
     ProductablesModule,
+    MediaModule,
   ],
   providers: [JwtSystemStrategy],
 })
