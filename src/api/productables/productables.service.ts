@@ -25,8 +25,7 @@ export class ProductablesService {
       .createQueryBuilder('tb_productable')
       .leftJoinAndSelect('tb_productable.order', 'tb_order')
       .leftJoinAndSelect('tb_productable.ticket', 'tb_ticket')
-      .where({ id })
-      .orWhere({ uuid: id })
+      .where({ uuid: id })
       .getOne();
     if (!productable) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
