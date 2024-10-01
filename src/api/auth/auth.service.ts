@@ -7,6 +7,7 @@ import { HttpResponse, PasswordHelper } from 'src/helpers';
 import { JwtService } from '@nestjs/jwt';
 import { aesEncode } from 'src/utils';
 import { RequestHeader } from 'src/interfaces';
+import { ROLE } from 'src/constants';
 
 @Injectable()
 export class AuthService {
@@ -15,13 +16,19 @@ export class AuthService {
     private readonly userRepo: Repository<User>,
     private readonly jwtService: JwtService,
   ) {}
-  async login(body: LoginAuthDto) {
+  async login(body: LoginAuthDto, check_is_employee: boolean) {
     const user = await this.userRepo
       .createQueryBuilder('tb_user')
       .where({ email: body.email })
       .getOne();
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    if (user.role !== ROLE.SPA && check_is_employee) {
+      throw new HttpException(
+        'User does not have the right roles.',
+        HttpStatus.FORBIDDEN,
+      );
     }
     const passwordMatched = await PasswordHelper.comparePassword(
       body.password,

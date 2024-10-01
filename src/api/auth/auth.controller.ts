@@ -25,8 +25,14 @@ export class AuthController {
 
   @Post('/login')
   login(@Body() body: LoginAuthDto) {
-    return this.authService.login(body);
+    return this.authService.login(body, true);
   }
+
+  @Post('/login-employee')
+  loginEmployee(@Body() body: LoginAuthDto) {
+    return this.authService.login(body, false);
+  }
+
   @Get('/profile')
   @ApiBearerAuth(name.JWT)
   @UseGuards(JwtSystemGuard)
