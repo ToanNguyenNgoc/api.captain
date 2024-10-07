@@ -54,4 +54,7 @@ export class Ticket {
     nullable: true,
   })
   productable: Productable[];
+
+  @Column({ nullable: true })
+  image_url: string;
 }

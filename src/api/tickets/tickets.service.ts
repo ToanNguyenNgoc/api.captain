@@ -22,6 +22,7 @@ export class TicketsService {
     ticket.price = createTicketDto.price;
     ticket.price_sale = createTicketDto.price_sale;
     ticket.status = true;
+    ticket.image_url = createTicketDto.image_url;
     ticket.title = createTicketDto.title;
     const response = await this.ticketRepo.save(ticket);
     return HttpResponse.detail(response);

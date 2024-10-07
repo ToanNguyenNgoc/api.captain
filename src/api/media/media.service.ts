@@ -1,11 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { CreateMediaDto } from './dto/create-media.dto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UpdateMediaDto } from './dto/update-media.dto';
+import { HttpResponse } from 'src/helpers';
 
 @Injectable()
 export class MediaService {
-  create(createMediaDto: CreateMediaDto) {
-    return 'This action adds a new media';
+  create(file: any) {
+    try {
+      const original_url = `${process.env.APP_DOMAIN}/media/${file.filename}`;
+      return HttpResponse.detail({ original_url: original_url });
+    } catch (error) {
+      console.log(error);
+      throw new HttpException('Update error', HttpStatus.BAD_REQUEST);
+    }
   }
 
   findAll() {

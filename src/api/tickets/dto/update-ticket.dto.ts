@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNumber, IsOptional } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, Matches } from 'class-validator';
 
 export class UpdateTicketDto {
   @IsOptional()
@@ -40,4 +40,12 @@ export class UpdateTicketDto {
   @IsOptional()
   @IsBoolean()
   status: boolean;
+
+  @ApiProperty()
+  @IsOptional()
+  @Matches(/\.(jpg|jpeg|png|gif|svg|HEIC)$/, {
+    message:
+      'Image URL must end with a valid image extension (jpg, jpeg, png, gif, svg, heic)',
+  })
+  image_url: string;
 }

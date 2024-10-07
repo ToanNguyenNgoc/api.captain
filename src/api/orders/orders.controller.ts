@@ -44,18 +44,18 @@ export class OrdersController {
   }
 
   @Put(':id')
-  // @ApiBearerAuth(name.JWT)
-  // @UseGuards(JwtSystemGuard, RoleGuardFactory([]))
+  @ApiBearerAuth(name.JWT)
+  @UseGuards(JwtSystemGuard, RoleGuardFactory([]))
   update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
     return this.ordersService.update(+id, updateOrderDto);
   }
 
-  // @Patch(':id')
-  // @ApiBearerAuth(name.JWT)
-  // @UseGuards(JwtSystemGuard, RoleGuardFactory([ROLE.EMPLOYEE]))
-  // checking(@Param('id') id: string, @Body() checkinOrderDto: CheckInOrderDto) {
-  //   return this.ordersService.checking(+id, checkinOrderDto);
-  // }
+  @Patch(':id')
+  @ApiBearerAuth(name.JWT)
+  @UseGuards(JwtSystemGuard, RoleGuardFactory([ROLE.EMPLOYEE]))
+  checking(@Param('id') id: string, @Body() checkinOrderDto: CheckInOrderDto) {
+    return this.ordersService.checking(+id, checkinOrderDto);
+  }
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.ordersService.remove(+id);
