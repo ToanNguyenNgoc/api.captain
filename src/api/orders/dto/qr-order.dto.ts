@@ -13,10 +13,17 @@ export const sortOrder = {
 export class QrOrderDto extends QrBaseDto {
   @ApiProperty({
     required: false,
-    description: 'Suport search: fullname, telephone, email, tran_uid',
+    description: 'Support search: fullname, telephone, email, tran_uid',
   })
   @IsOptional()
   search: string;
+
+  @ApiProperty({
+    required: false,
+    description: 'Filter order by ticket id',
+  })
+  @IsOptional()
+  ticket_id: number;
 
   @ApiProperty({ required: false, enum: Object.values(ORDER_STATUS) })
   @IsIn(Object.values(ORDER_STATUS))

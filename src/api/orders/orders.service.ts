@@ -106,6 +106,12 @@ export class OrdersService {
       );
     }
 
+    if (qr.ticket_id) {
+      queryBuilder.andWhere('tb_ticket.id = :ticketId', {
+        ticketId: qr.ticket_id,
+      });
+    }
+
     // Điều kiện trạng thái
     if (qr.status) {
       queryBuilder.andWhere('tb_order.status = :status', { status: qr.status });
