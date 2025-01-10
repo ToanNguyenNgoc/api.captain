@@ -16,7 +16,7 @@ import { LoginAuthDto } from './dto';
 import { RequestHeader } from 'src/interfaces';
 import { User } from '../users/entities/user.entity';
 import { name } from 'src/constants';
-import { JwtSystemGuard } from 'src/middlewares/guards';
+import { JwtSystemGuard, RecaptchaGuard } from 'src/middlewares/guards';
 
 @ApiTags(API_TAG.Auth)
 @Controller('api/auth')
@@ -24,6 +24,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('/login')
+  @UseGuards(RecaptchaGuard)
   login(@Body() body: LoginAuthDto) {
     return this.authService.login(body, true);
   }
