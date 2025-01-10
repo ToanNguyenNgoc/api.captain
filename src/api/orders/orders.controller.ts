@@ -16,7 +16,11 @@ import { CheckInOrderDto, UpdateOrderDto } from './dto/update-order.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { API_TAG } from 'src/swagger';
 import { QrOrderDto } from './dto';
-import { JwtSystemGuard, RoleGuardFactory } from 'src/middlewares/guards';
+import {
+  JwtSystemGuard,
+  RecaptchaGuard,
+  RoleGuardFactory,
+} from 'src/middlewares/guards';
 import { name, ROLE } from 'src/constants';
 
 @ApiTags(API_TAG.Order)
@@ -25,6 +29,7 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
+  @UseGuards(RecaptchaGuard)
   create(@Body() createOrderDto: CreateOrderDto) {
     return this.ordersService.create(createOrderDto);
   }

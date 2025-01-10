@@ -21,7 +21,10 @@ export class RecaptchaGuard implements CanActivate {
     if (!recaptcha) {
       throw new HttpException('Recaptcha is required', HttpStatus.FORBIDDEN);
     }
-    if (recaptcha === String(process.env.RECAPTCHA_FE_KEY)) {
+    if (
+      recaptcha === String(process.env.RECAPTCHA_FE_KEY) ||
+      recaptcha === String(process.env.RECAPTCHA_FE_HARD_CODE)
+    ) {
       return true;
     }
     const verificationURL =
